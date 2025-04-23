@@ -1,6 +1,10 @@
 package sftp
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/pkg/sftp"
+)
 
 type ISFTPService interface {
 
@@ -16,6 +20,10 @@ type sftpService struct{}
 
 func NewSFTPService() ISFTPService {
 	return &sftpService{}
+}
+
+func (service *sftpService) ConnectClient() (*sftp.Client, error) {
+	return nil, nil
 }
 
 func (service *sftpService) CloseClient() {

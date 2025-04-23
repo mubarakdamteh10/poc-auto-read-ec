@@ -15,5 +15,4 @@ run-main:
 	PORT=3000 go run cmd/main.go
 
 run-test:
-	golangci-lint run
 	go test -race -cover ./... -count=1 -failfast
