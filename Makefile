@@ -7,7 +7,7 @@ export SFTP_HOST=10.7.57.162
 export SFTP_PORT=22
 export SFTP_USERNAME=mock
 export SFTP_PASSWORD=mock
-export SFTP_BASEPATH=SIAM/dev
+export SFTP_BASEPATH=ttb/dev
 
 
 
