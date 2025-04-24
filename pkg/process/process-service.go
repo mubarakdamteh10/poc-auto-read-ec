@@ -1,5 +1,7 @@
 package process
 
+import "poc-auto-read-ec/pkg/sftp"
+
 type IProcessService interface {
 	// AutoReadEC reads the EC data from SFTP
 	//	input:
@@ -16,13 +18,29 @@ type IProcessService interface {
 	ProcessConvertJsonToXML() error
 }
 
-type processService struct{}
+type processService struct {
+	sftpService sftp.ISFTPService
+}
 
 func NewProcessService() IProcessService {
-	return &processService{}
+	return &processService{
+		sftpService: sftp.NewSFTPService(),
+	}
 }
 
 func (service *processService) ProcessAutoReadEC() error {
+
+	// Calling function GetECDataFromSFTP
+	_, err := service.sftpService.GetAllFileEC()
+	if err != nil {
+		return err
+	}
+
+	// Calling function ConvertJsonToXML
+
+	// Calling function SaveXMLToSFTP
+
+	// Calling function SaveXMLToDB
 	return nil
 }
 
