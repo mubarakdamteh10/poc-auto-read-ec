@@ -17,3 +17,14 @@ func TestNewJsonToSoap(t *testing.T) {
 
 	assert.NotNil(t, service, "Service should not be nil")
 }
+
+func TestExtractJSON(t *testing.T) {
+
+	t.Run("success", func(t *testing.T) {
+		// Arrange
+
+		// Act
+
+		// Assert
+	})
+}
