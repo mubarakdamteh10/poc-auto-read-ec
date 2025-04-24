@@ -31,7 +31,3 @@ type GetObjectByPath struct {
 	IncludeACL              string `xml:"ns:includeACL,omitempty"`
 }
 
-type XMLRawFile struct {
-	FileName         string
-	RawFile          []byte
-}

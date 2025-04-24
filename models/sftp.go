@@ -7,3 +7,8 @@ type SFTPConfiguration struct {
 	Port     string
 	BasePath string
 }
+
+type CSVRawFile struct {
+	FileName         string
+	RawFile          []byte
+}

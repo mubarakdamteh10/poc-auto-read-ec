@@ -3,6 +3,9 @@ package sftp
 import (
 	"fmt"
 	"io"
+	"path/filepath"
+	"strings"
+
 	"poc-auto-read-ec/environment"
 	"poc-auto-read-ec/models"
 
@@ -26,16 +29,16 @@ type ISFTPService interface {
 	//	- error: an error if the connection fails
 	ConnectClient() (*sftp.Client, error)
 
-	// GetAllFileEC retrieves all XMLRawFile entries from the SFTP server
+	// GetAllCSVFile retrieves all CSVRawFile entries from the SFTP server
 	//	input:
 	//	- none
 	//	output:
-	//	- []models.XMLRawFile: a slice of XMLRawFile objects found
+	//	- []models.CSVRawFile: a slice of CSVRawFile objects found
 	//	- error: an error if the retrieval fails
-	GetAllFileEC() ([]models.XMLRawFile,error)
+	GetAllCSVFile() ([]models.CSVRawFile, error)
 }
 
-type sftpService struct{
+type sftpService struct {
 	client *sftp.Client
 }
 
@@ -48,23 +51,24 @@ func (service *sftpService) ConnectClient() (*sftp.Client, error) {
 }
 
 func (service *sftpService) CloseClient() {
-	service.client.Close()
+	if service.client != nil {
+		service.client.Close()
+	}
 }
 
-func (service *sftpService) GetAllFileEC() ([]models.XMLRawFile,error){
-
+func (service *sftpService) GetAllCSVFile() ([]models.CSVRawFile, error) {
 	config := environment.GetSFTPConfiguration()
-
 	directory := config.BasePath
+
 	listFile, err := service.client.ReadDir(directory)
 	if err != nil {
 		return nil, err
 	}
 
-	listRawFile := []models.XMLRawFile{}
+	listCSVFile := []models.CSVRawFile{}
 
 	for _, fileInfo := range listFile {
-		if !fileInfo.IsDir() {
+		if !fileInfo.IsDir() && strings.EqualFold(filepath.Ext(fileInfo.Name()), ".csv") {
 			absFileName := fmt.Sprintf("%s/%s", directory, fileInfo.Name())
 
 			content, err := service.getFileContent(absFileName)
@@ -72,16 +76,16 @@ func (service *sftpService) GetAllFileEC() ([]models.XMLRawFile,error){
 				return nil, err
 			}
 
-			rawFile := models.XMLRawFile{
-				FileName:         fileInfo.Name(),
-				RawFile:          content,
+			csvFile := models.CSVRawFile{
+				FileName: fileInfo.Name(),
+				RawFile:  content,
 			}
 
-			listRawFile = append(listRawFile, rawFile)
+			listCSVFile = append(listCSVFile, csvFile)
 		}
 	}
 
-	return  listRawFile, nil
+	return listCSVFile, nil
 }
 
 func (service *sftpService) getFileContent(filename string) ([]byte, error) {
