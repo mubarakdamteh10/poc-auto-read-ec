@@ -1,6 +1,8 @@
 package sftp
 
 import (
+	"bytes"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"path/filepath"
@@ -36,6 +38,14 @@ type ISFTPService interface {
 	//	- []models.CSVRawFile: a slice of CSVRawFile objects found
 	//	- error: an error if the retrieval fails
 	GetAllCSVFile() ([]models.CSVRawFile, error)
+
+	// ParseCSVToPerson parses raw CSV data into a slice of Person structs
+	//	input:
+	//	- data []byte: raw CSV file content as byte slice, including header row
+	//	output:
+	//	- []models.Person: a slice of Person structs parsed from CSV
+	//	- error: an error if parsing fails or headers/columns mismatch
+	ParseCSVToPerson(data []byte) ([]models.Person, error)
 }
 
 type sftpService struct {
@@ -101,4 +111,56 @@ func (service *sftpService) getFileContent(filename string) ([]byte, error) {
 	}
 
 	return data, nil
+}
+
+func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, error) {
+	reader := csv.NewReader(bytes.NewReader(data))
+	reader.TrimLeadingSpace = true
+
+	header, err := reader.Read()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read header: %w", err)
+	}
+
+	for value := range header {
+		header[value] = strings.ToLower(strings.ReplaceAll(strings.TrimSpace(header[value]), " ", "_"))
+	}
+
+	var people []models.Person
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("failed to read record: %w", err)
+		}
+		if len(record) != len(header) {
+			return nil, fmt.Errorf("record length mismatch")
+		}
+
+		person := models.Person{}
+		for index, value := range header {
+			recordValue := strings.TrimSpace(record[index])
+			switch value {
+			case "first_name":
+				person.FirstName = recordValue
+			case "last_name":
+				person.LastName = recordValue
+			case "email":
+				person.Email = recordValue
+			case "phone_number":
+				person.PhoneNumber = recordValue
+			case "date_of_birth":
+				person.DateOfBirth = recordValue
+			case "address":
+				person.Address = recordValue
+			}
+		}
+
+		people = append(people, person)
+	}
+
+	return people, nil
 }
