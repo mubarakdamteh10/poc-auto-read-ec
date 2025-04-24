@@ -25,6 +25,14 @@ type ISFTPService interface {
 	//	- *sftp.Client: a pointer to the SFTP client
 	//	- error: an error if the connection fails
 	ConnectClient() (*sftp.Client, error)
+
+	// GetAllFileEC retrieves all XMLRawFile entries from the SFTP server
+	//	input:
+	//	- none
+	//	output:
+	//	- []models.XMLRawFile: a slice of XMLRawFile objects found
+	//	- error: an error if the retrieval fails
+	GetAllFileEC() ([]models.XMLRawFile,error)
 }
 
 type sftpService struct{
@@ -43,7 +51,7 @@ func (service *sftpService) CloseClient() {
 	service.client.Close()
 }
 
-func (service *sftpService) GetFileEC() ([]models.XMLRawFile,error){
+func (service *sftpService) GetAllFileEC() ([]models.XMLRawFile,error){
 
 	config := environment.GetSFTPConfiguration()
 
