@@ -11,6 +11,7 @@ import (
 	"poc-auto-read-ec/environment"
 	"poc-auto-read-ec/models"
 
+	"github.com/pkg/errors"
 	"github.com/pkg/sftp"
 )
 
@@ -46,6 +47,14 @@ type ISFTPService interface {
 	//	- []models.Person: a slice of Person structs parsed from CSV
 	//	- error: an error if parsing fails or headers/columns mismatch
 	ParseCSVToPerson(data []byte) ([]models.Person, error)
+
+	// TransformPersonToGorm transforms a slice of Person structs
+	// input :
+	//	- []models.Person
+	// output:
+	//	- []models.GormPerson
+	//	- error
+	TransformPersonToGorm([]models.Person) ([]models.GormPerson, error)
 }
 
 type sftpService struct {
@@ -163,4 +172,9 @@ func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, erro
 	}
 
 	return people, nil
+}
+
+func (service *sftpService) TransformPersonToGorm([]models.Person) ([]models.GormPerson, error) {
+
+	return nil, errors.New("waiting implement")
 }

@@ -3,6 +3,7 @@ module poc-auto-read-ec
 go 1.24
 
 require (
+	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.13.9
 	github.com/stretchr/testify v1.10.0
 )
