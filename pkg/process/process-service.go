@@ -30,13 +30,12 @@ func NewProcessService() IProcessService {
 
 func (service *processService) ProcessAutoReadEC() error {
 
-	// Calling function GetECDataFromSFTP
-	_, err := service.sftpService.GetAllFileEC()
+	_, err := service.sftpService.GetAllCSVFile()
 	if err != nil {
 		return err
 	}
 
-	// Calling function ConvertJsonToXML
+	// Calling function ConvertJsonToGORM
 
 	// Calling function SaveXMLToSFTP
 
