@@ -5,14 +5,13 @@ import (
 
 	"github.com/pkg/sftp"
 	"github.com/stretchr/testify/mock"
-	"golang.org/x/crypto/ssh"
 )
 
 type MockSFTPService struct {
 	mock.Mock
 }
 
-func (mock *MockSFTPService) ConnectClient(conn *ssh.Client) (*sftp.Client, error) {
+func (mock *MockSFTPService) ConnectClient() (*sftp.Client, error) {
 	result := mock.Called()
 	return result.Get(0).(*sftp.Client), result.Error(1)
 }

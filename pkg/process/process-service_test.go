@@ -1,11 +1,13 @@
 package process
 
 import (
-	"github.com/stretchr/testify/assert"
+	"errors"
 	"poc-auto-read-ec/internal/fake"
 	"poc-auto-read-ec/models"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewProcessService(t *testing.T) {
@@ -18,7 +20,7 @@ func TestNewProcessService(t *testing.T) {
 	}
 }
 
-func TestCallingConnectClient(t *testing.T) {
+func TestProcessAutoReadEC_CallsProcessAutoReadEC_Success(t *testing.T) {
 	mockSFTPService := &fake.MockSFTPService{}
 	testFiles := []models.CSVRawFile{
 		{FileName: "test-list.csv", RawFile: []byte{72, 101, 108, 108, 111}},
@@ -30,4 +32,18 @@ func TestCallingConnectClient(t *testing.T) {
 	}
 
 	service.ProcessAutoReadEC()
+}
+
+func TestProcessAutoReadEC_CallsProcessAutoReadEC_Failed(t *testing.T) {
+	mockSftpService := &fake.MockSFTPService{}
+	mockSftpService.Mock.On("GetAllCSVFile").Return(errors.New("cannot read the csv files from the server"))
+	service := &processService{
+		sftpService: mockSftpService,
+	}
+	err := service.ProcessConvertJsonToXML()
+	
+
+	if(err == nil){
+		t.Logf("Expected error, got %v",err)
+	}
 }
