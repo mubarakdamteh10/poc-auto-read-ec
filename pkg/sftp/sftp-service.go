@@ -5,13 +5,14 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"github.com/pkg/sftp"
-	"golang.org/x/crypto/ssh"
 	"io"
 	"path/filepath"
 	"poc-auto-read-ec/environment"
 	"poc-auto-read-ec/models"
 	"strings"
+
+	"github.com/pkg/sftp"
+	"golang.org/x/crypto/ssh"
 )
 
 type ISFTPService interface {
@@ -49,11 +50,11 @@ type ISFTPService interface {
 
 	// TransformPersonToGorm transforms a slice of Person structs
 	// input :
-	//	- []models.Person
+	//	- listPerson []models.Person
 	// output:
 	//	- []models.GormPerson
 	//	- error
-	TransformPersonToGorm([]models.Person) ([]models.GormPerson, error)
+	TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error)
 }
 
 type ISftpClientFactory interface {
@@ -91,7 +92,7 @@ func NewClient(conn *ssh.Client) (*sftp.Client, error) {
 
 func (service *sftpService) ConnectClient(conn *ssh.Client) (*sftp.Client, error) {
 	if conn == nil {
-		return nil, errors.New("Connection is not specified.")
+		return nil, errors.New("connection is not specified")
 	}
 
 	return sftp.NewClient(conn)
@@ -202,7 +203,18 @@ func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, erro
 	return people, nil
 }
 
-func (service *sftpService) TransformPersonToGorm([]models.Person) ([]models.GormPerson, error) {
-
-	return nil, errors.New("waiting implement")
+func (service *sftpService) TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error) {
+	listGorm := []models.GormPerson{}
+	for _, person := range listPerson {
+		gormPerson := models.GormPerson{
+			FirstName:   person.FirstName,
+			LastName:    person.LastName,
+			Email:       person.Email,
+			PhoneNumber: person.PhoneNumber,
+			DateOfBirth: person.DateOfBirth,
+			Address:     person.Address,
+		}
+		listGorm = append(listGorm, gormPerson)
+	}
+	return listGorm, nil
 }
