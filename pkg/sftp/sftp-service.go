@@ -81,6 +81,31 @@ func NewClient(conn *ssh.Client) (*sftp.Client, error) {
 
 }
 
+func MapRecordToPerson(header, record []string) (models.Person, error) {
+
+	person := models.Person{}
+
+	for index, key := range header {
+		recordValue := strings.TrimSpace(record[index])
+		switch key {
+		case "first_name":
+			person.FirstName = recordValue
+		case "last_name":
+			person.LastName = recordValue
+		case "email":
+			person.Email = recordValue
+		case "phone_number":
+			person.PhoneNumber = recordValue
+		case "date_of_birth":
+			person.DateOfBirth = recordValue
+		case "address":
+			person.Address = recordValue
+		}
+	}
+
+	return person, nil
+}
+
 // func (service *sftpService) ConnectClient() (*sftp.Client, error) {
 // 	client, err := service.clientFactory.NewClient(service.conn)
 // 	if err != nil {
@@ -182,24 +207,9 @@ func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, erro
 			return nil, fmt.Errorf("record length mismatch")
 		}
 
-		person := models.Person{}
-
-		for index, key := range header {
-			recordValue := strings.TrimSpace(record[index])
-			switch key {
-			case "first_name":
-				person.FirstName = recordValue
-			case "last_name":
-				person.LastName = recordValue
-			case "email":
-				person.Email = recordValue
-			case "phone_number":
-				person.PhoneNumber = recordValue
-			case "date_of_birth":
-				person.DateOfBirth = recordValue
-			case "address":
-				person.Address = recordValue
-			}
+		person, err := MapRecordToPerson(header, record)
+		if err != nil {
+			return nil, err
 		}
 
 		people = append(people, person)

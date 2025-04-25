@@ -123,48 +123,78 @@ func TestTransformPersonToGorm(t *testing.T) {
 
 func TestParseCSVToPerson_Valid(t *testing.T) {
 	t.Run("valid record", func(t *testing.T) {
-	//Arrange
-    input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
+		//Arrange
+		input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
 	John,Doe,john@example.com,1234567890,1990-01-01,123 Street`
 
-	service :=  &sftpService{}
+		service := &sftpService{}
 
-	//Act
-    actualResult, err := service.ParseCSVToPerson([]byte(input))
+		//Act
+		actualResult, err := service.ParseCSVToPerson([]byte(input))
 
-	//Assert
-    require.NoError(t, err)
+		//Assert
+		require.NoError(t, err)
 
-	expectedResult := []models.Person{
-        {
-            FirstName:   "John",
-            LastName:    "Doe",
-            Email:       "john@example.com",
-            PhoneNumber: "1234567890",
-            DateOfBirth: "1990-01-01",
-            Address:     "123 Street",
-        },
-	}
-    assert.Equal(t, expectedResult, actualResult)
+		expectedResult := []models.Person{
+			{
+				FirstName:   "John",
+				LastName:    "Doe",
+				Email:       "john@example.com",
+				PhoneNumber: "1234567890",
+				DateOfBirth: "1990-01-01",
+				Address:     "123 Street",
+			},
+		}
+		assert.Equal(t, expectedResult, actualResult)
 	})
 
 	t.Run("failed to read record", func(t *testing.T) {
 		//Arrange
-        input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
+		input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
 		"John,Doe,john@example.com,1234567890,1990-01-01,123 Street`
 
-		service :=  &sftpService{}
+		service := &sftpService{}
 
 		//Act
-        _, err := service.ParseCSVToPerson([]byte(input))
+		_, err := service.ParseCSVToPerson([]byte(input))
 
 		//Assert
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "failed to read record")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to read record")
 
-    })
+	})
 }
 
+func TestMapRecordToPerson(t *testing.T) {
+	//Arrange
+	header := []string{
+		"first_name", "last_name", "email", "phone_number", "date_of_birth", "address",
+	}
+	record := []string{
+		"Jeng", "TestDee", "jengTestDee@example.com", "0981234567", "1988-11-06", "512 Bang Son Bangkok",
+	}
+
+	//Act
+	person, err := MapRecordToPerson(header, record)
+
+	// Assert
+	expected := models.Person{
+		FirstName:   "Jeng",
+		LastName:    "TestDee",
+		Email:       "jengTestDee@example.com",
+		PhoneNumber: "0981234567",
+		DateOfBirth: "1988-11-06",
+		Address:     "512 Bang Son Bangkok",
+	}
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if person != expected {
+		t.Errorf("expected %+v, got %+v", expected, person)
+	}
+}
 
 // func TestConnectClient_Success(t *testing.T) {
 // 	service := &sftpService{}
