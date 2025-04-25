@@ -152,55 +152,60 @@ func (service *sftpService) getFileContent(filename string) ([]byte, error) {
 }
 
 func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, error) {
-	reader := csv.NewReader(bytes.NewReader(data))
-	reader.TrimLeadingSpace = true
+    // Create a new CSV reader from the byte slice
+    reader := csv.NewReader(bytes.NewReader(data))
+    reader.TrimLeadingSpace = true 
 
-	header, err := reader.Read()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read header: %w", err)
-	}
+    header, err := reader.Read()
+    if err != nil {
+        return nil, fmt.Errorf("failed to read header: %w", err)
+    }
 
-	for value := range header {
-		header[value] = strings.ToLower(strings.ReplaceAll(strings.TrimSpace(header[value]), " ", "_"))
-	}
+    // Normalize header fields: trim, convert to lowercase and replace spaces with underscores
+    for i := range header {
+        header[i] = strings.ToLower(strings.ReplaceAll(strings.TrimSpace(header[i]), " ", "_"))
+    }
 
-	var people []models.Person
+    var people []models.Person 
 
-	for {
-		record, err := reader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, fmt.Errorf("failed to read record: %w", err)
-		}
-		if len(record) != len(header) {
-			return nil, fmt.Errorf("record length mismatch")
-		}
+	// infinite loop will stop when hit EOF
+    for {
+        record, err := reader.Read()
+        if err == io.EOF {
+            break
+        }
+        if err != nil {
+            return nil, fmt.Errorf("failed to read record: %w", err)
+        }
 
-		person := models.Person{}
-		for index, value := range header {
-			recordValue := strings.TrimSpace(record[index])
-			switch value {
-			case "first_name":
-				person.FirstName = recordValue
-			case "last_name":
-				person.LastName = recordValue
-			case "email":
-				person.Email = recordValue
-			case "phone_number":
-				person.PhoneNumber = recordValue
-			case "date_of_birth":
-				person.DateOfBirth = recordValue
-			case "address":
-				person.Address = recordValue
-			}
-		}
+        if len(record) != len(header) {
+            return nil, fmt.Errorf("record length mismatch")
+        }
 
-		people = append(people, person)
-	}
+        person := models.Person{}
 
-	return people, nil
+        for index, key := range header {
+            recordValue := strings.TrimSpace(record[index])
+            switch key {
+            case "first_name":
+                person.FirstName = recordValue
+            case "last_name":
+                person.LastName = recordValue
+            case "email":
+                person.Email = recordValue
+            case "phone_number":
+                person.PhoneNumber = recordValue
+            case "date_of_birth":
+                person.DateOfBirth = recordValue
+            case "address":
+                person.Address = recordValue
+            }
+        }
+
+        people = append(people, person)
+    }
+
+    return people, nil 
 }
 
 func (service *sftpService) TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error) {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/pkg/sftp"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -120,3 +121,48 @@ func TestTransformPersonToGorm(t *testing.T) {
 	})
 
 }
+
+func TestParseCSVToPerson_Valid(t *testing.T) {
+	t.Run("valid record", func(t *testing.T) {
+	//Arrange
+    input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
+	John,Doe,john@example.com,1234567890,1990-01-01,123 Street`
+
+	service :=  &sftpService{}
+
+	//Act
+    actualResult, err := service.ParseCSVToPerson([]byte(input))
+
+	//Assert
+    require.NoError(t, err)
+
+	expectedResult := []models.Person{
+        {
+            FirstName:   "John",
+            LastName:    "Doe",
+            Email:       "john@example.com",
+            PhoneNumber: "1234567890",
+            DateOfBirth: "1990-01-01",
+            Address:     "123 Street",
+        },
+	}
+    assert.Equal(t, expectedResult, actualResult)
+	})
+
+	t.Run("failed to read record", func(t *testing.T) {
+		//Arrange
+        input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
+		"John,Doe,john@example.com,1234567890,1990-01-01,123 Street`
+
+		service :=  &sftpService{}
+
+		//Act
+        _, err := service.ParseCSVToPerson([]byte(input))
+
+		//Assert
+        assert.Error(t, err)
+        assert.Contains(t, err.Error(), "failed to read record")
+
+    })
+}
+
