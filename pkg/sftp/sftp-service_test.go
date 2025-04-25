@@ -59,7 +59,6 @@ type MockSFTPClient struct {
 func TestConnectClient_Failed(t *testing.T) {
 
 	service := &sftpService{}
-
 	_, err := service.ConnectClient(nil)
 
 	if err == nil {
@@ -167,3 +166,21 @@ func TestParseCSVToPerson_Valid(t *testing.T) {
 }
 
 
+// func TestConnectClient_Success(t *testing.T) {
+// 	service := &sftpService{}
+
+// 	dummy := &ssh.Client{}
+// 	func (d *ssh.Client) NewSession() (*Session, error) {
+// 		return nil,nil
+// 	}
+// 	client, err := service.ConnectClient(dummy)
+
+// 	if err != nil {
+// 		t.Errorf("Expected error to nil, got: %v", err)
+// 	}
+
+// 	if client == nil {
+// 		t.Errorf("Expected a client instance, got: %v", client)
+// 	}
+
+// }
