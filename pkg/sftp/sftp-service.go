@@ -3,16 +3,15 @@ package sftp
 import (
 	"bytes"
 	"encoding/csv"
+	"errors"
 	"fmt"
+	"github.com/pkg/sftp"
+	"golang.org/x/crypto/ssh"
 	"io"
 	"path/filepath"
-	"strings"
-
 	"poc-auto-read-ec/environment"
 	"poc-auto-read-ec/models"
-
-	"github.com/pkg/errors"
-	"github.com/pkg/sftp"
+	"strings"
 )
 
 type ISFTPService interface {
@@ -30,7 +29,7 @@ type ISFTPService interface {
 	//	output:
 	//	- *sftp.Client: a pointer to the SFTP client
 	//	- error: an error if the connection fails
-	ConnectClient() (*sftp.Client, error)
+	ConnectClient(*ssh.Client) (*sftp.Client, error)
 
 	// GetAllCSVFile retrieves all CSVRawFile entries from the SFTP server
 	//	input:
@@ -57,16 +56,45 @@ type ISFTPService interface {
 	TransformPersonToGorm([]models.Person) ([]models.GormPerson, error)
 }
 
+type ISftpClientFactory interface {
+	NewClient(conn *ssh.Client) (*sftp.Client, error)
+}
+
 type sftpService struct {
 	client *sftp.Client
+	// clientFactory ISftpClientFactory
+	// conn          *ssh.Client
 }
 
 func NewSFTPService() ISFTPService {
 	return &sftpService{}
 }
 
-func (service *sftpService) ConnectClient() (*sftp.Client, error) {
-	return nil, nil
+func NewClient(conn *ssh.Client) (*sftp.Client, error) {
+
+	if conn == nil {
+		return nil, errors.New("ssh client is nil")
+	}
+
+	return sftp.NewClient(conn)
+
+}
+
+// func (service *sftpService) ConnectClient() (*sftp.Client, error) {
+// 	client, err := service.clientFactory.NewClient(service.conn)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer client.Close()
+// 	return client, nil
+// }
+
+func (service *sftpService) ConnectClient(conn *ssh.Client) (*sftp.Client, error) {
+	if conn == nil {
+		return nil, errors.New("Connection is not specified.")
+	}
+
+	return sftp.NewClient(conn)
 }
 
 func (service *sftpService) CloseClient() {
