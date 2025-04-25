@@ -20,7 +20,7 @@ func NewPersonRepository() IPersonRepository {
 	return &personRepository{}
 }
 
-func (repo *personRepository) ConnectMSSQL() error {
+func (repo *personRepository) ConnectMSSQL() (*gorm.DB, error) {
 	dsn := fmt.Sprintf("sqlserver:%s@%s:%s@%s?database=%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
@@ -29,14 +29,19 @@ func (repo *personRepository) ConnectMSSQL() error {
 		os.Getenv("DB_NAME"),
 	)
 
-	_, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database: " + err.Error())
 	}
 	fmt.Println("Connected to MSSQL DB successfully")
-	return nil
+	return db, nil
 }
 
 func (repo *personRepository) InsertPersonToDB(list []models.GormPerson) error {
+
+	if len(list) != 0 {
+		// insert data to db
+
+	}
 	return errors.New("waiting for implement")
 }
