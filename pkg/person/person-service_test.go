@@ -24,7 +24,6 @@ func TestNewPersonService(t *testing.T) {
 func TestSavePersonsToDB(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
-		// Arrange
 
 		mockPerson := []models.GormPerson{
 			{
@@ -51,16 +50,13 @@ func TestSavePersonsToDB(t *testing.T) {
 		service := personService{
 			repository: mockPersonService,
 		}
-		// Act
 
 		err := service.SavePersonsToDB(mockPerson)
 
-		// Assert
 		assert.NoError(t, err)
 	})
 
 	t.Run("error", func(t *testing.T) {
-		// Arrange
 
 		mockPerson := []models.GormPerson{
 			{
@@ -87,11 +83,9 @@ func TestSavePersonsToDB(t *testing.T) {
 		service := personService{
 			repository: mockPersonService,
 		}
-		// Act
 
 		err := service.SavePersonsToDB(mockPerson)
 
-		// Assert
 		assert.ErrorContains(t, err, "waiting for implement")
 	})
 }

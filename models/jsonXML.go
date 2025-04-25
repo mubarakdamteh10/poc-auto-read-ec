@@ -2,7 +2,6 @@ package models
 
 import "encoding/xml"
 
-// SoapEnvelope struct
 type Envelope struct {
 	XMLName xml.Name `xml:"soapenv:Envelope"`
 	SoapEnv string   `xml:"xmlns:soapenv,attr"`
@@ -30,4 +29,3 @@ type GetObjectByPath struct {
 	IncludePolicyIds        string `xml:"ns:includePolicyIds,omitempty"`
 	IncludeACL              string `xml:"ns:includeACL,omitempty"`
 }
-

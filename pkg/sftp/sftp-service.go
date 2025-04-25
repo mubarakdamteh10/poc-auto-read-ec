@@ -16,44 +16,14 @@ import (
 )
 
 type ISFTPService interface {
-
-	// CloseClient closes the SFTP client connection
-	//	input:
-	//	- none
-	//	output:
-	//	- none
 	CloseClient()
 
-	// ConnectClient establishes a connection to the SFTP server
-	//	input:
-	//	- none
-	//	output:
-	//	- *sftp.Client
-	//	- error
 	ConnectClient(*ssh.Client) (*sftp.Client, error)
 
-	// GetAllCSVFile retrieves all CSVRawFile entries from the SFTP server
-	//	input:
-	//	- none
-	//	output:
-	//	- []models.CSVRawFile
-	//	- error
 	GetAllCSVFile() ([]models.CSVRawFile, error)
 
-	// ParseCSVToPerson parses raw CSV data into a slice of Person structs
-	//	input:
-	//	- data []byte
-	//	output:
-	//	- []models.Person
-	//	- error
 	ParseCSVToPerson(data []byte) ([]models.Person, error)
 
-	// TransformPersonToGorm transforms a slice of Person structs
-	// input :
-	//	- listPerson []models.Person
-	// output:
-	//	- []models.GormPerson
-	//	- error
 	TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error)
 }
 
@@ -63,8 +33,6 @@ type ISftpClientFactory interface {
 
 type sftpService struct {
 	client *sftp.Client
-	// clientFactory ISftpClientFactory
-	// conn          *ssh.Client
 }
 
 func NewSFTPService() ISFTPService {
@@ -105,15 +73,6 @@ func MapRecordToPerson(header, record []string) (models.Person, error) {
 
 	return person, nil
 }
-
-// func (service *sftpService) ConnectClient() (*sftp.Client, error) {
-// 	client, err := service.clientFactory.NewClient(service.conn)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer client.Close()
-// 	return client, nil
-// }
 
 func (service *sftpService) ConnectClient(conn *ssh.Client) (*sftp.Client, error) {
 	if conn == nil {
@@ -177,7 +136,6 @@ func (service *sftpService) getFileContent(filename string) ([]byte, error) {
 }
 
 func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, error) {
-	// Create a new CSV reader from the byte slice
 	reader := csv.NewReader(bytes.NewReader(data))
 	reader.TrimLeadingSpace = true
 
@@ -186,14 +144,12 @@ func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, erro
 		return nil, fmt.Errorf("failed to read header: %w", err)
 	}
 
-	// Normalize header fields: trim, convert to lowercase and replace spaces with underscores
 	for i := range header {
 		header[i] = strings.ToLower(strings.ReplaceAll(strings.TrimSpace(header[i]), " ", "_"))
 	}
 
 	var people []models.Person
 
-	// infinite loop will stop when hit EOF
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {

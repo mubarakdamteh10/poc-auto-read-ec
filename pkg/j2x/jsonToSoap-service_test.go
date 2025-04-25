@@ -21,10 +21,5 @@ func TestNewJsonToSoap(t *testing.T) {
 func TestExtractJSON(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
-		// Arrange
-
-		// Act
-
-		// Assert
 	})
 }

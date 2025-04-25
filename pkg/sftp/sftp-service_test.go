@@ -26,11 +26,6 @@ func (m *MockSFTPClient) NewClient(conn *ssh.Client) (*sftp.Client, error) {
 	return nil, nil
 }
 func TestNewSFTPService(t *testing.T) {
-	// os.Setenv("SFTP_HOST", "test")
-	// os.Setenv("SFTP_PORT", "test")
-	// os.Setenv("SFTP_USERNAME", "test")
-	// os.Setenv("SFTP_PASSWORD", "test")
-	// os.Setenv("SFTP_BASEPATH", "test")
 	service := NewSFTPService()
 	v := reflect.Indirect(reflect.ValueOf(service))
 	for index := 0; index < v.NumField(); index++ {
@@ -40,17 +35,6 @@ func TestNewSFTPService(t *testing.T) {
 		}
 	}
 }
-
-// func (m *MockSFTPClient) Close() error {
-// 	return nil
-// }
-
-// func (m *MockSFTPClient) ReadDir(p string) ([]os.FileInfo, error) {
-// 	return []os.FileInfo{}, nil
-// }
-// func (m *MockSFTPClient) Open(path string) (*sftp.File, error) {
-// 	return nil, nil
-// }
 
 type MockSFTPClient struct {
 	sftp.Client
@@ -70,7 +54,6 @@ func TestConnectClient_Failed(t *testing.T) {
 func TestTransformPersonToGorm(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
-		// Arrange
 		mockListPerson := []models.Person{
 			{
 				FirstName:   "John",
@@ -92,10 +75,8 @@ func TestTransformPersonToGorm(t *testing.T) {
 
 		service := NewSFTPService()
 
-		// Act
 		result, err := service.TransformPersonToGorm(mockListPerson)
 
-		// Assert
 		assert.NoError(t, err)
 		assert.Equal(t, len(result), len(mockListPerson))
 		expected := []models.GormPerson{
@@ -123,16 +104,13 @@ func TestTransformPersonToGorm(t *testing.T) {
 
 func TestParseCSVToPerson_Valid(t *testing.T) {
 	t.Run("valid record", func(t *testing.T) {
-		//Arrange
 		input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
 	John,Doe,john@example.com,1234567890,1990-01-01,123 Street`
 
 		service := &sftpService{}
 
-		//Act
 		actualResult, err := service.ParseCSVToPerson([]byte(input))
 
-		//Assert
 		require.NoError(t, err)
 
 		expectedResult := []models.Person{
@@ -149,16 +127,13 @@ func TestParseCSVToPerson_Valid(t *testing.T) {
 	})
 
 	t.Run("failed to read record", func(t *testing.T) {
-		//Arrange
 		input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
 		"John,Doe,john@example.com,1234567890,1990-01-01,123 Street`
 
 		service := &sftpService{}
 
-		//Act
 		_, err := service.ParseCSVToPerson([]byte(input))
 
-		//Assert
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to read record")
 
@@ -166,7 +141,6 @@ func TestParseCSVToPerson_Valid(t *testing.T) {
 }
 
 func TestMapRecordToPerson(t *testing.T) {
-	//Arrange
 	header := []string{
 		"first_name", "last_name", "email", "phone_number", "date_of_birth", "address",
 	}
@@ -174,10 +148,8 @@ func TestMapRecordToPerson(t *testing.T) {
 		"Jeng", "TestDee", "jengTestDee@example.com", "0981234567", "1988-11-06", "512 Bang Son Bangkok",
 	}
 
-	//Act
 	person, err := MapRecordToPerson(header, record)
 
-	// Assert
 	expected := models.Person{
 		FirstName:   "Jeng",
 		LastName:    "TestDee",
@@ -195,22 +167,3 @@ func TestMapRecordToPerson(t *testing.T) {
 		t.Errorf("expected %+v, got %+v", expected, person)
 	}
 }
-
-// func TestConnectClient_Success(t *testing.T) {
-// 	service := &sftpService{}
-
-// 	dummy := &ssh.Client{}
-// 	func (d *ssh.Client) NewSession() (*Session, error) {
-// 		return nil,nil
-// 	}
-// 	client, err := service.ConnectClient(dummy)
-
-// 	if err != nil {
-// 		t.Errorf("Expected error to nil, got: %v", err)
-// 	}
-
-// 	if client == nil {
-// 		t.Errorf("Expected a client instance, got: %v", client)
-// 	}
-
-// }

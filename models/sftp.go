@@ -18,7 +18,7 @@ type Person struct {
 	LastName    string `json:"last_name"`
 	Email       string `json:"email"`
 	PhoneNumber string `json:"phone_number"`
-	DateOfBirth string `json:"date_of_birth"` // ISO 8601 format: "YYYY-MM-DD"
+	DateOfBirth string `json:"date_of_birth"`
 	Address     string `json:"address"`
 }
 

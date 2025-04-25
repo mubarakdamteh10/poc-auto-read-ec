@@ -11,11 +11,6 @@ import (
 )
 
 type IPersonRepository interface {
-	// InsertPersonToDB inserts list of person into the database
-	// input :
-	//	- list : []models.GormPerson
-	// output :
-	//	- error : error
 	InsertPersonToDB(list []models.GormPerson) error
 }
 
