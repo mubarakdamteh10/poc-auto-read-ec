@@ -2,6 +2,10 @@ package models
 
 import "encoding/xml"
 
+
+type SoapData struct {
+	
+}
 type Envelope struct {
 	XMLName xml.Name `xml:"soapenv:Envelope"`
 	SoapEnv string   `xml:"xmlns:soapenv,attr"`
