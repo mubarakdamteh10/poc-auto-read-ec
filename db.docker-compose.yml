@@ -1,6 +1,7 @@
 services:
   sqlserver2022:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
     container_name: sqlserver2022
     environment:
       ACCEPT_EULA: 'Y'
