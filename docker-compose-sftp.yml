@@ -1,0 +1,15 @@
+version: '0.1'
+name: sftp-server-for-batch
+services:
+  sftp:
+    image: atmoz/sftp
+    volumes:
+        - /upload:/home/foo/upload
+    ports:
+        - "2222:22"
+    command: foo:pass:1001
+
+
+networks:
+  my-network:
+    driver: bridge
