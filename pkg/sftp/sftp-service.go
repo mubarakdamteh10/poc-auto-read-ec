@@ -29,6 +29,7 @@ type ISFTPService interface {
 	ParseCSVToListRaw(files []models.CSVRawFile) ([]models.Person, error)
 
 	TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error)
+
 }
 
 type ISftpClientFactory interface {

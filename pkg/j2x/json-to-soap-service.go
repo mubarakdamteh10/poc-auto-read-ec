@@ -1,12 +1,21 @@
 package j2x
 
-import "errors"
+import (
+	"errors"
+	"poc-auto-read-ec/models"
+)
 
 type IJsonToSoap interface {
+	CreateSoapData() (*models.SoapData, error)
 	ExtractJSON() error
 }
 
 type jsonToSoap struct{}
+
+func (service *jsonToSoap) CreateSoapData() (*models.SoapData, error) {
+	return &models.SoapData{}, nil
+
+}
 
 func NewJsonToSoap() IJsonToSoap {
 	return &jsonToSoap{}
