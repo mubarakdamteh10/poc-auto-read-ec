@@ -1,6 +1,9 @@
 package person
 
 import (
+	"errors"
+	"poc-auto-read-ec/internal/fake"
+	"poc-auto-read-ec/models"
 	"reflect"
 	"testing"
 
@@ -19,9 +22,76 @@ func TestNewPersonService(t *testing.T) {
 }
 
 func TestSavePersonsToDB(t *testing.T) {
-	// Arrange
 
-	// Act
+	t.Run("Success", func(t *testing.T) {
+		// Arrange
 
-	// Assert
+		mockPerson := []models.GormPerson{
+			{
+				FirstName:   "John",
+				LastName:    "Doe",
+				Email:       "yourMomIsGay@male.com",
+				PhoneNumber: "0123456789",
+				DateOfBirth: "1990-01-01",
+				Address:     "123 Main St",
+			},
+			{
+				FirstName:   "Jane",
+				LastName:    "MaiDee",
+				Email:       "yourMomIsGay@male.com",
+				PhoneNumber: "0123456789",
+				DateOfBirth: "1990-01-01",
+				Address:     "123 Main St",
+			},
+		}
+
+		mockPersonService := &fake.MockPersonRepository{}
+		mockPersonService.On("InsertPersonToDB", mockPerson).Return(nil)
+
+		service := personService{
+			repository: mockPersonService,
+		}
+		// Act
+
+		err := service.SavePersonsToDB(mockPerson)
+
+		// Assert
+		assert.NoError(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// Arrange
+
+		mockPerson := []models.GormPerson{
+			{
+				FirstName:   "John",
+				LastName:    "Doe",
+				Email:       "yourMomIsGay@male.com",
+				PhoneNumber: "0123456789",
+				DateOfBirth: "1990-01-01",
+				Address:     "123 Main St",
+			},
+			{
+				FirstName:   "Jane",
+				LastName:    "MaiDee",
+				Email:       "yourMomIsGay@male.com",
+				PhoneNumber: "0123456789",
+				DateOfBirth: "1990-01-01",
+				Address:     "123 Main St",
+			},
+		}
+
+		mockPersonService := &fake.MockPersonRepository{}
+		mockPersonService.On("InsertPersonToDB", mockPerson).Return(errors.New("waiting for implement"))
+
+		service := personService{
+			repository: mockPersonService,
+		}
+		// Act
+
+		err := service.SavePersonsToDB(mockPerson)
+
+		// Assert
+		assert.ErrorContains(t, err, "waiting for implement")
+	})
 }
