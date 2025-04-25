@@ -1,9 +1,23 @@
 package person
 
+import "poc-auto-read-ec/models"
+
 type IPersonService interface{}
 
-type personService struct{}
+type personService struct {
+	repository IPersonRepository
+}
 
 func NewPersonService() IPersonService {
-	return &personService{}
+	return &personService{
+		repository: NewPersonRepository(),
+	}
+}
+
+func (service *personService) SavePersonsToDB(list []models.GormPerson) error {
+	err := service.repository.InsertPersonToDB(list)
+	if err != nil {
+		return err
+	}
+	return nil
 }

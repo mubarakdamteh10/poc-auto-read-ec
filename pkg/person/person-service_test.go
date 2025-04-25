@@ -17,3 +17,11 @@ func TestNewPersonService(t *testing.T) {
 
 	assert.NotNil(t, service, "Service should not be nil")
 }
+
+func TestSavePersonsToDB(t *testing.T) {
+	// Arrange
+
+	// Act
+
+	// Assert
+}
