@@ -21,15 +21,16 @@ func NewPersonRepository() IPersonRepository {
 }
 
 func (repo *personRepository) ConnectMSSQL() (*gorm.DB, error) {
-	dsn := fmt.Sprintf("sqlserver:%s@%s:%s@%s?database=%s",
+	conn := fmt.Sprintf("sqlserver://%s:%s@%s:%s?database=%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
+		// table specific ??
 	)
 
-	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlserver.Open(conn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database: " + err.Error())
 	}
@@ -39,9 +40,23 @@ func (repo *personRepository) ConnectMSSQL() (*gorm.DB, error) {
 
 func (repo *personRepository) InsertPersonToDB(list []models.GormPerson) error {
 
-	if len(list) != 0 {
-		// insert data to db
-
+	if len(list) == 0 {
+		return errors.New("list is empty")
 	}
-	return errors.New("waiting for implement")
+	db, err := repo.ConnectMSSQL()
+	if err != nil {
+		return err
+	}
+
+	if err := db.AutoMigrate(&models.GormPerson{}); err != nil {
+		return fmt.Errorf("failed to migrate schema: %v", err)
+	}
+
+	if err := db.Create(&list).Error; err != nil {
+		return fmt.Errorf("failed to insert data: %v", err)
+	}
+
+	fmt.Println("Inserted persons successfully")
+	return nil
+
 }

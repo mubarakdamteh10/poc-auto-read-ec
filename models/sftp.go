@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 type SFTPConfiguration struct {
 	Username string
 	Password string
@@ -23,7 +25,7 @@ type Person struct {
 }
 
 type GormPerson struct {
-	Id          uint   `gorm:"primaryKey;autoIncrement"`
+	gorm.Model
 	FirstName   string `gorm:"column:first_name"`
 	LastName    string `gorm:"column:last_name"`
 	Email       string `gorm:"column:email"`
