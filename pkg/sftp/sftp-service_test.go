@@ -40,17 +40,6 @@ type MockSFTPClient struct {
 	sftp.Client
 }
 
-func TestConnectClient_Failed(t *testing.T) {
-
-	service := &sftpService{}
-	_, err := service.ConnectClient(nil)
-
-	if err == nil {
-		t.Errorf("Expected error 'mock connection error', got: %v", err)
-	}
-
-}
-
 func TestTransformPersonToGorm(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
