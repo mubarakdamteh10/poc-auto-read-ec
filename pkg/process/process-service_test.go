@@ -41,9 +41,8 @@ func TestProcessAutoReadEC_CallsProcessAutoReadEC_Failed(t *testing.T) {
 		sftpService: mockSftpService,
 	}
 	err := service.ProcessConvertJsonToXML()
-	
 
-	if(err == nil){
-		t.Logf("Expected error, got %v",err)
+	if err == nil {
+		t.Logf("Expected error, got %v", err)
 	}
 }
