@@ -75,45 +75,32 @@ func MapRecordToPerson(header, record []string) (models.Person, error) {
 }
 
 func (service *sftpService) ConnectClient() (*sftp.Client, error) {
-	// Check if the SFTP client is already initialized
 	if service.client == nil {
-		// Load SFTP configuration values (like host, port, username, password)
 		env := environment.GetSFTPConfiguration()
 
-		// Create an SSH client configuration with username and password authentication
 		config := &ssh.ClientConfig{
 			User: env.Username,
 			Auth: []ssh.AuthMethod{
 				ssh.Password(env.Password),
 			},
-			// Skip host key verification (not secure for production)
 			HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		}
 
-		// Format host and port as "host:port" string
 		ipPort := fmt.Sprintf("%s:%s", env.Host, env.Port)
 
-		// Open an SSH connection to the SFTP server
 		conn, err := ssh.Dial("tcp", ipPort, config)
 		if err != nil {
-			// Log and return error if SSH connection fails
 			fmt.Printf("Failed to dial: %+v", err)
 			return nil, err
 		}
 
-		// Create a new SFTP client over the established SSH connection
 		client, err := sftp.NewClient(conn)
 		if err != nil {
-			// Log and return error if SFTP client creation fails
 			fmt.Printf("Failed to create SFTP client: %+v", err)
 			return nil, err
 		}
-
-		// Store the created SFTP client in the service for reuse
 		service.client = client
 	}
-
-	// Return the existing or newly created SFTP client
 	return service.client, nil
 }
 
