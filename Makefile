@@ -18,7 +18,7 @@ run-test:
 	go test -race -cover ./... -count=1 -failfast
 
 run-db:
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f db.docker-compose.yml up -d
 
 stop-db:
-	docker-compose -f docker-compose.yml down
+	docker-compose -f db.docker-compose.yml down
