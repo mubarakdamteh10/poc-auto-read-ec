@@ -37,9 +37,7 @@ func (service *processService) ProcessAutoReadEC() error {
 
 	// Calling function ConvertJsonToGORM
 
-	// Calling function SaveXMLToSFTP
-
-	// Calling function SaveXMLToDB
+	// Calling function SaveTODB
 	return nil
 }
 
