@@ -48,10 +48,6 @@ func (repo *personRepository) InsertPersonToDB(list []models.GormPerson) error {
 		return err
 	}
 
-	if err := db.AutoMigrate(&models.GormPerson{}); err != nil {
-		return fmt.Errorf("failed to migrate schema: %v", err)
-	}
-
 	if err := db.Create(&list).Error; err != nil {
 		return fmt.Errorf("failed to insert data: %v", err)
 	}
