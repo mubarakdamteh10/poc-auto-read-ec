@@ -91,14 +91,14 @@ func TestTransformPersonToGorm(t *testing.T) {
 
 }
 
-func TestParseCSVToPerson_Valid(t *testing.T) {
+func TestExtractRawCSVToPerson(t *testing.T) {
 	t.Run("valid record", func(t *testing.T) {
 		input := `First Name,Last Name,Email,Phone Number,Date of Birth,Address
 	John,Doe,john@example.com,1234567890,1990-01-01,123 Street`
 
 		service := &sftpService{}
 
-		actualResult, err := service.ParseCSVToPerson([]byte(input))
+		actualResult, err := service.ExtractRawCSVToPerson([]byte(input))
 
 		require.NoError(t, err)
 
@@ -121,7 +121,7 @@ func TestParseCSVToPerson_Valid(t *testing.T) {
 
 		service := &sftpService{}
 
-		_, err := service.ParseCSVToPerson([]byte(input))
+		_, err := service.ExtractRawCSVToPerson([]byte(input))
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to read record")

@@ -21,20 +21,25 @@ func (mock *MockSFTPService) CloseClient() {
 
 func (mock *MockSFTPService) GetAllCSVFile() ([]models.CSVRawFile, error) {
 	result := mock.Called()
-		return result.Get(0).([]models.CSVRawFile), nil
+	return result.Get(0).([]models.CSVRawFile), nil
 }
 
-func (mock *MockSFTPService) getFileContent(filename string) ([]byte, error) {
-	result := mock.Called()
+func (mock *MockSFTPService) GetFileContent(filename string) ([]byte, error) {
+	result := mock.Called(filename)
 	return result.Get(0).([]byte), nil
 }
 
-func (mock *MockSFTPService) ParseCSVToPerson(data []byte) ([]models.Person, error) {
-	result := mock.Called()
+func (mock *MockSFTPService) ExtractRawCSVToPerson(data []byte) ([]models.Person, error) {
+	result := mock.Called(data)
 	return result.Get(0).([]models.Person), nil
 
 }
 func (mock *MockSFTPService) TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error) {
-	result := mock.Called()
+	result := mock.Called(listPerson)
 	return result.Get(0).([]models.GormPerson), nil
+}
+
+func (mock *MockSFTPService) ParseCSVToListRaw(files []models.CSVRawFile) ([]models.Person, error) {
+	result := mock.Called(files)
+	return result.Get(0).([]models.Person), nil
 }

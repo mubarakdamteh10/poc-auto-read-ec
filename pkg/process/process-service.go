@@ -30,7 +30,7 @@ func (service *processService) ProcessAutoReadEC() error {
 		return err
 	}
 
-	listPerson, err := service.sftpService.ParseCSVToPerson(listRawCSV[0].RawFile)
+	listPerson, err := service.sftpService.ParseCSVToListRaw(listRawCSV)
 	if err != nil {
 		return err
 	}

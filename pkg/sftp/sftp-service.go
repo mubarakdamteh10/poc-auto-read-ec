@@ -22,7 +22,11 @@ type ISFTPService interface {
 
 	GetAllCSVFile() ([]models.CSVRawFile, error)
 
-	ParseCSVToPerson(data []byte) ([]models.Person, error)
+	GetFileContent(filename string) ([]byte, error)
+
+	ExtractRawCSVToPerson(data []byte) ([]models.Person, error)
+
+	ParseCSVToListRaw(files []models.CSVRawFile) ([]models.Person, error)
 
 	TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error)
 }
@@ -125,7 +129,7 @@ func (service *sftpService) GetAllCSVFile() ([]models.CSVRawFile, error) {
 		if !fileInfo.IsDir() && strings.EqualFold(filepath.Ext(fileInfo.Name()), ".csv") {
 			absFileName := fmt.Sprintf("%s/%s", directory, fileInfo.Name())
 
-			content, err := service.getFileContent(absFileName)
+			content, err := service.GetFileContent(absFileName)
 			if err != nil {
 				return nil, err
 			}
@@ -142,22 +146,21 @@ func (service *sftpService) GetAllCSVFile() ([]models.CSVRawFile, error) {
 	return listCSVFile, nil
 }
 
-func (service *sftpService) getFileContent(filename string) ([]byte, error) {
-	file, err := service.client.Open(filename)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %w", err)
-	}
-	defer file.Close()
+func (service *sftpService) ParseCSVToListRaw(files []models.CSVRawFile) ([]models.Person, error) {
+	var people []models.Person
 
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file content: %w", err)
+	for _, file := range files {
+		persons, err := service.ExtractRawCSVToPerson(file.RawFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse file %s: %w", file.FileName, err)
+		}
+		people = append(people, persons...)
 	}
 
-	return data, nil
+	return people, nil
 }
 
-func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, error) {
+func (service *sftpService) ExtractRawCSVToPerson(data []byte) ([]models.Person, error) {
 	reader := csv.NewReader(bytes.NewReader(data))
 	reader.TrimLeadingSpace = true
 
@@ -170,7 +173,7 @@ func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, erro
 		header[i] = strings.ToLower(strings.ReplaceAll(strings.TrimSpace(header[i]), " ", "_"))
 	}
 
-	var people []models.Person
+	people := []models.Person{}
 
 	for {
 		record, err := reader.Read()
@@ -194,6 +197,21 @@ func (service *sftpService) ParseCSVToPerson(data []byte) ([]models.Person, erro
 	}
 
 	return people, nil
+}
+
+func (service *sftpService) GetFileContent(filename string) ([]byte, error) {
+	file, err := service.client.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file content: %w", err)
+	}
+
+	return data, nil
 }
 
 func (service *sftpService) TransformPersonToGorm(listPerson []models.Person) ([]models.GormPerson, error) {
