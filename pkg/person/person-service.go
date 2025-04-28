@@ -2,7 +2,9 @@ package person
 
 import "poc-auto-read-ec/models"
 
-type IPersonService interface{}
+type IPersonService interface {
+	SavePersonsToDB(list []models.GormPerson) error
+}
 
 type personService struct {
 	repository IPersonRepository

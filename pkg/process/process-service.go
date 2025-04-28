@@ -1,6 +1,9 @@
 package process
 
-import "poc-auto-read-ec/pkg/sftp"
+import (
+	"poc-auto-read-ec/pkg/person"
+	"poc-auto-read-ec/pkg/sftp"
+)
 
 type IProcessService interface {
 	ProcessAutoReadEC() error
@@ -9,25 +12,38 @@ type IProcessService interface {
 }
 
 type processService struct {
-	sftpService sftp.ISFTPService
+	sftpService   sftp.ISFTPService
+	personService person.IPersonService
 }
 
 func NewProcessService() IProcessService {
 	return &processService{
-		sftpService: sftp.NewSFTPService(),
+		sftpService:   sftp.NewSFTPService(),
+		personService: person.NewPersonService(),
 	}
 }
 
 func (service *processService) ProcessAutoReadEC() error {
 
-	_, err := service.sftpService.GetAllCSVFile()
+	listRawCSV, err := service.sftpService.GetAllCSVFile()
 	if err != nil {
 		return err
 	}
 
-	// Calling function ConvertJsonToGORM
+	listPerson, err := service.sftpService.ParseCSVToPerson(listRawCSV[0].RawFile)
+	if err != nil {
+		return err
+	}
 
-	// Calling function SaveTODB
+	listGormPerson, err := service.sftpService.TransformPersonToGorm(listPerson)
+	if err != nil {
+		return err
+	}
+
+	err = service.personService.SavePersonsToDB(listGormPerson)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -52,7 +52,6 @@ func (repo *personRepository) InsertPersonToDB(list []models.GormPerson) error {
 		return fmt.Errorf("failed to insert data: %v", err)
 	}
 
-	fmt.Println("Inserted persons successfully")
 	return nil
 
 }
